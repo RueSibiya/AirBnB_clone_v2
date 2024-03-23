@@ -113,52 +113,19 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, arg):
-    """Create an object with given parameters"""
-    if not arg:
-        print("** class name missing **")
-        return
-
-    args_list = arg.split()
-    class_name = args_list[0]
-
-    if class_name not in self.classes:
-        print("** class doesn't exist **")
-        return
-
-    # Initialize dictionary to store parameters
-    params = {}
-
-    # Parse and validate parameters
-    for param in args_list[1:]:
-        key_value = param.split("=")
-        if len(key_value) != 2:
-            print(f"Invalid parameter: {param}")
-            continue
-
-        key, value = key_value
-        # Parse and validate value
-        if value.startswith('"') and value.endswith('"'):
-            value = value[1:-1].replace('_', ' ').replace('\\"', '"')
-        elif '.' in value:
-            try:
-                value = float(value)
-            except ValueError:
-                print(f"Invalid float value: {value}")
-                continue
-        else:
-            try:
-                value = int(value)
-            except ValueError:
-                print(f"Invalid integer value: {value}")
-                continue
-
-        params[key] = value
-
-    # Create object with parameters
-    new_instance = self.classes[class_name](**params)
-    storage.save()
-    print(new_instance.id)
+    def do_create(self, args):
+        """ Create an object of any class"""
+        try:
+            if not args:
+                raise SyntaxError()
+            arg_list = args.split(" ")
+            kw = {}
+            for arg in arg_list[1:]:
+                arg_splited = arg.split("=")
+                arg_splited[1] = eval(arg_splited[1])
+                if type(arg_splited[1]) is str:
+                    arg_splited[1] = arg_splited[1].replace("_", " ").replace('"', '\\"')
+                kw[arg_splited[0]] = arg_splited[1]
         except SyntaxError:
             print("** class name missing **")
         except NameError:
