@@ -53,11 +53,10 @@ class BaseModel:
         """Updates updated_at with current time when instance is changed"""
         self.updated_at = datetime.utcnow()
         storage.save()
-
-    def to_dict(self):
-        """Convert instance into dict format"""
-        dictionary = self.__dict__.copy()
-        dictionary['__class__'] = type(self).__name__
-        dictionary['created_at'] = self.created_at.isoformat()
-        dictionary['updated_at'] = self.updated_at.isoformat()
-	return dictionary
+    def to_dicelf):
+    	"""Convert instance into dict format"""
+    	dictionary = self.__dict__.copy()
+    	dictionary['__class__'] = type(self).__name__
+    	dictionary['created_at'] = self.created_at.isoformat()
+    	dictionary['updated_at'] = self.updated_at.isoformat()
+    	return dictionary
