@@ -3,9 +3,11 @@
 This script automates the deployment of web_static using Fabric.
 """
 
-from fabric.api import env, run, put
+from fabric.api import env, run, put, local, cd, lcd, put
+from fabric import task
+from fabric import task, Connection, Config
 
-env.hosts = [54.237.49.126]  # Update with your server IP
+env.hosts = ['54.237.49.126']  # Update with your server IP
 env.user = 'ubuntu'  # Update with your SSH username
 env.key_filename = '/home/kathy2470/.ssh/id_rsa'  # Update with your private key path
 
