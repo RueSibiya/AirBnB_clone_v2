@@ -1,63 +1,30 @@
 #!/usr/bin/env bash
 #Script to set up web servers for deployment of web_static
 
-# Install Nginx if not already installed
-if ! command -v nginx &> /dev/null; then
-    sudo apt-get update
-    sudo apt-get -y install nginx
-fi
+#!/usr/bin/env bash
+# script that sets up web servers for the deployment of web_static
+sudo apt-get update
+sudo apt-get -y install nginx
+sudo ufw allow 'Nginx HTTP'
 
-# Create necessary directories if they don't exist
-sudo mkdir -p /data/web_static/releases/test/
+sudo mkdir -p /data/
+sudo mkdir -p /data/web_static/
+sudo mkdir -p /data/web_static/releases/
 sudo mkdir -p /data/web_static/shared/
-sudo mkdir -p /data/web_static/current/
-
-# Create fake HTML file
-echo "<html>
+sudo mkdir -p /data/web_static/releases/test/
+sudo touch /data/web_static/releases/test/index.html
+sudo echo "<html>
   <head>
   </head>
   <body>
     Holberton School
   </body>
-</html>" | sudo tee /data/web_static/releases/test/index.html > /dev/null
+</html>" | sudo tee /data/web_static/releases/test/index.html
 
-# Create symbolic link
-sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
+sudo ln -s -f /data/web_static/releases/test/ /data/web_static/current
 
-# Give ownership of /data/ to ubuntu user and group
-sudo chown -R kathy2470:kathy2470 /data/
+sudo chown -R ubuntu:ubuntu /data/
 
-# Update Nginx configuration
-config_content=$(cat <<EOF
-server {
-    listen 80;
-    server_name _;
+sudo sed -i '/listen 80 default_server/a location /hbnb_static { alias /data/web_static/current/;}' /etc/nginx/sites-enabled/default
 
-    location /hbnb_static {
-        alias /data/web_static/current/;
-    }
-
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-
-    error_page 404 /404.html;
-    location = /404.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
-
-    add_header X-Served-By $HOSTNAME;
-
-    location / {
-        try_files $uri $uri/ =404;
-    }
-}
-EOF
-)
-echo "$config_content" | sudo tee /etc/nginx/sites-available/default > /dev/null
-
-# Restart Nginx
 sudo service nginx restart
-
-exit 0
